@@ -11,6 +11,18 @@
 
 PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개편했습니다. 부담 없이 쓰시라고 공유드립니다.
 
+## 화면
+
+| 실시간 대시보드 | Top SQL |
+|---|---|
+| ![대시보드](screenshots/dashboard.png) | ![Top SQL](screenshots/top-sql.png) |
+
+| 락 체인 | History |
+|---|---|
+| ![락 체인](screenshots/locks.png) | ![History](screenshots/history.png) |
+
+![알림](screenshots/alerts.png)
+
 ## 설치·설정
 
 - 압축을 풀고 폴더째 둔 뒤 `pgtune.exe` 를 실행하면 됩니다 (Single File Publishing).

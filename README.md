@@ -12,6 +12,18 @@
 pgtune is a desktop monitor for PostgreSQL. This release is a full rewrite of the UI and the
 diagnostics behind it. Free to use, no strings attached.
 
+## Screenshots
+
+| Live dashboard | Top SQL |
+|---|---|
+| ![Dashboard](screenshots/dashboard.png) | ![Top SQL](screenshots/top-sql.png) |
+
+| Lock chains | History |
+|---|---|
+| ![Locks](screenshots/locks.png) | ![History](screenshots/history.png) |
+
+![Alerts](screenshots/alerts.png)
+
 ## Install
 
 - Unzip, keep the folder together, and run `pgtune.exe` (single-file publish).
