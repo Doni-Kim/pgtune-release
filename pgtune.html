@@ -263,7 +263,7 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         <tr><td><span class="kbd">F2</span> <span class="kbd">F3</span> <span class="kbd">F4</span> <span class="kbd">F5</span></td><td>필터 — All / Running / Waiting / Blocking</td></tr>
         <tr><td><span class="kbd">S</span></td><td>정렬 순환 (Duration → Wait → PID → User → DB). 열 머리글 클릭도 동일</td></tr>
         <tr><td><span class="kbd">Enter</span> / <span class="kbd">P</span></td><td>선택한 세션의 상세 — 전체 쿼리와 실행 계획</td></tr>
-        <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">K</span></td><td>선택한 세션 취소 (pg_cancel_backend). 확인을 누르는 순간 그 PID가 아직 같은 쿼리인지 다시 보고, 바뀌었으면 취소하지 않습니다</td></tr>
+        <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">K</span></td><td>선택한 세션 취소 (pg_cancel_backend). 확인을 누르는 순간 그 PID가 아직 같은 쿼리인지 다시 보고, 바뀌었으면 취소하지 않습니다. 먼저 목록에서 세션을 골라야 하며, 접속 계정이 superuser이거나 <code>pg_signal_backend</code> 역할이어야 합니다</td></tr>
         <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">X</span></td><td>선택한 세션을 Excel로 내보내기</td></tr>
     </table>
 
@@ -387,6 +387,19 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         나중에 <span class="kbd">H</span>로 그 기록을 열어 지난 흐름을 되짚어 봅니다.
         화면의 Trend 그래프는 메모리에만 있어 끄면 사라지지만, 이건 파일에 남습니다.</p>
 
+    <div class="info-box">
+        <strong>어떤 세션을 남길지 — <code>pg_monitor_filter.json</code>.</strong> 실행 파일 옆에 있고(없으면 처음 로깅을 켤 때 기본값으로 만들어집니다),
+        <strong>로그에만</strong> 적용됩니다 — 화면에는 영향이 없습니다.
+        <ul style="margin-bottom:0">
+            <li>기본값은 idle 접속과 <code>SELECT 1</code> · <code>BEGIN</code> · <code>COMMIT</code> 같은 의미 없는 문장을 빼고 남깁니다.</li>
+            <li>컬럼(<code>state</code> · <code>usename</code> · <code>application_name</code> · <code>datname</code> · <code>client_addr</code> · <code>wait_event</code> 등)마다
+                <code>exclude</code> 목록으로 빼고, <code>duration_sec.min</code>으로 몇 초 이상 돈 것만, <code>query.excludePatterns</code>로 문장(부분 일치 또는 정규식)을 뺍니다.</li>
+            <li>항목별 뜻은 파일 안에 영어 주석으로 적혀 있습니다. <code>//</code> 주석과 끝 쉼표를 그대로 둬도 읽힙니다.
+                파일이 깨져 있으면 기본값으로 동작하고 파일은 건드리지 않습니다. 지우면 기본 파일이 다시 만들어집니다.</li>
+            <li>이 파일은 실행 중 처음 로깅을 켤 때 한 번만 읽습니다. 고친 내용은 <strong>pgtune을 다시 시작해야</strong> 반영됩니다.</li>
+        </ul>
+    </div>
+
     <p><strong>구간</strong>은 위쪽 버튼으로 고릅니다 — <code>1h</code> · <code>6h</code> · <code>24h</code> ·
         <code>1w</code> · <code>1M</code> · <code>All</code>. 고른 구간만 파일에서 다시 읽습니다.
         줄이 많으면 목표 5,000점에 맞춰 건너뛰며 읽으므로, 파일이 아무리 커도 <code>All</code>이 무겁지 않습니다.
@@ -450,7 +463,7 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         그것도 사용자가 <span class="kbd">Ctrl</span>+<span class="kbd">K</span>로 명시적으로 실행할 때만입니다.</p>
     <table>
         <tr><th>화면</th><th>읽는 뷰 / 함수</th></tr>
-        <tr><td>메인 · 세션</td><td><code>pg_stat_activity</code>, <code>pg_stat_database</code>, <code>pg_stat_checkpointer</code> / <code>pg_stat_bgwriter</code>, <code>pg_settings</code>, <code>pg_blocking_pids()</code> (Blocking 필터)</td></tr>
+        <tr><td>메인 · 세션</td><td><code>pg_stat_activity</code>, <code>pg_stat_database</code>, <code>pg_stat_checkpointer</code> / <code>pg_stat_bgwriter</code>, <code>pg_settings</code>, <code>pg_blocking_pids()</code> (Blocking 필터), <code>pg_stat_io</code> (PG 17+ 의 BufBacknd)</td></tr>
         <tr><td>서버 정보 (I)</td><td><code>version()</code>, <code>pg_settings</code>, <code>pg_stat_activity</code>, <code>pg_stat_wal</code>, <code>pg_stat_replication</code></td></tr>
         <tr><td>디스크 (D)</td><td><code>pg_tablespace</code>, <code>pg_tablespace_size()</code>, <code>pg_database</code>, <code>pg_database_size()</code></td></tr>
         <tr><td>접속 (C)</td><td><code>pg_stat_activity</code>, <code>pg_settings</code></td></tr>
@@ -460,7 +473,7 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         <tr><td>Top SQL (T)</td><td><code>pg_stat_statements</code>, <code>pg_database</code>, <code>pg_roles</code></td></tr>
         <tr><td>인덱스 (X)</td><td><code>pg_stat_user_indexes</code>, <code>pg_stat_user_tables</code>, <code>pg_index</code>, <code>pg_class</code></td></tr>
         <tr><td>History (H)</td><td>로컬 SQLite 로그 (<code>{DB명}/pgtune_monitor.db</code> — 폴더 이름에 쓸 수 없는 문자는 <code>_</code>로 바뀜)</td></tr>
-        <tr><td>Alert (N)</td><td>1단계는 수집한 스냅샷 재사용, 2단계는 <code>pg_database</code>·<code>pg_locks</code>·<code>pg_stat_replication</code>·<code>pg_replication_slots</code> (60초 주기)</td></tr>
+        <tr><td>Alert (N)</td><td>1단계는 수집한 스냅샷 재사용, 2단계는 <code>pg_database</code>·<code>pg_blocking_pids()</code>·<code>pg_stat_replication</code>·<code>pg_replication_slots</code> (60초 주기)</td></tr>
     </table>
 
     <div class="footer">
