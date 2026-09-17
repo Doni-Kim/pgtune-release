@@ -68,6 +68,7 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 
 - .NET 11.0 (x64), C# 14, Blazor Hybrid
 - 패키지: Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
+- 실행 파일에 묶인 위 오픈소스들의 저작권 고지 · 라이선스 전문: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (zip 안에도 들어 있습니다)
 
 ## pgtune.json 예시
 

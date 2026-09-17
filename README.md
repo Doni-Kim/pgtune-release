@@ -74,6 +74,7 @@ Errors are written to `pgtune.log` next to the executable. Send me that file.
 
 - .NET 11.0 (x64), C# 14, Blazor Hybrid
 - Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
+- Copyright notices and license texts of these bundled components: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (also inside the zip)
 
 ## pgtune.json
 
