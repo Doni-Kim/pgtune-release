@@ -1,7 +1,7 @@
 # pgtune — a real-time PostgreSQL monitor (free)
 
 ![.NET 11](https://img.shields.io/badge/.NET-11.0-512BD4)
-![C# 14](https://img.shields.io/badge/C%23-14-239120)
+![C# 15](https://img.shields.io/badge/C%23-15-239120)
 ![Blazor Hybrid](https://img.shields.io/badge/Blazor-Hybrid-5C2D91)
 ![PostgreSQL 14+](https://img.shields.io/badge/PostgreSQL-14%2B-336791)
 ![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6)
