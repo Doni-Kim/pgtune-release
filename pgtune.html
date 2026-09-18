@@ -122,7 +122,7 @@
         </svg>
         <h1>pgtune</h1>
         <div class="subtitle">PostgreSQL 실시간 모니터</div>
-        <div class="version">Version 3.2.1 &nbsp;|&nbsp; Windows</div>
+        <div class="version">Version 3.3 &nbsp;|&nbsp; Windows</div>
         <div style="font-size:12px; color:#b7c0c9; margin-top:12px; letter-spacing:1px;">DBMS Works 2026</div>
     </div>
 
@@ -201,8 +201,9 @@
   }
 }</pre>
     <div class="info-box">
-        비밀번호를 평문으로 적어 두면 <strong>첫 실행 때 자동으로 암호화</strong>되어 다시 저장됩니다.
-        이후에는 암호화된 값이 들어 있습니다.
+        비밀번호를 평문으로 적어 두면 <strong>첫 실행 때 자동으로 암호화</strong>되어 <code>"ENC1:…"</code> 로 다시 저장됩니다(AES-256-GCM).
+        3.2.1 까지의 옛 암호문도 그대로 읽고, 첫 실행에서 ENC1 로 바꿔 저장하므로 비밀번호를 다시 넣을 필요가 없습니다.
+        저장된 ENC1 값을 풀지 못하면(파일 손상 등) 접속 창이 그 사유와 함께 뜹니다 — 비밀번호를 다시 넣으면 됩니다.
         <ul style="margin-bottom:0">
             <li><strong>접속이 실패하면</strong> 프로그램이 끝나지 않고, 그 값이 채워진 접속 입력 창이 오류와 함께 뜹니다.
                 고쳐서 <em>Connect</em>를 누르면 되고, 설정 파일은 <strong>접속에 성공한 뒤에만</strong> 저장됩니다.</li>
@@ -236,9 +237,9 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
 
     <table>
         <tr><th>영역</th><th>내용</th></tr>
-        <tr><td><strong>상단 바</strong></td><td>접속 서버·시각. <span class="kbd">F2</span>~<span class="kbd">F5</span>로 All / Running / Waiting / Blocking 세션만 추리고, 지금 걸린 필터는 그 버튼이 켜져 보여 줍니다. 오른쪽에서 테마를 고릅니다.</td></tr>
+        <tr><td><strong>상단 바</strong></td><td>접속 서버·시각. <span class="kbd">F2</span>~<span class="kbd">F5</span>로 All / Running / Waiting / Blocking 세션만 추리고, 지금 걸린 필터는 그 버튼이 켜져 보여 줍니다. 오른쪽에서 테마를 고릅니다. 어두운 테마를 고르면 창 제목줄도 어두워지고, 시작할 때 흰 화면이 번쩍이지 않습니다.</td></tr>
         <tr><td><strong>알림 줄</strong></td><td>임계값을 넘긴 항목이 있으면 노랑(주의)·빨강(위험)으로 뜹니다. 눌러서 자세히 봅니다.</td></tr>
-        <tr><td><strong>게이지</strong></td><td>캐시 적중률과 접속 사용률. 한눈에 "얼마나 찼나"가 보입니다. 캐시 적중률은 서버 시작 이후 누적이 아니라 <strong>직전 갱신 이후 구간</strong> 값입니다(읽은 블록이 너무 적은 구간은 누적값으로 돌아갑니다).</td></tr>
+        <tr><td><strong>게이지</strong></td><td>캐시 적중률과 접속 사용률. 한눈에 "얼마나 찼나"가 보입니다. 캐시 적중률 색은 4단계입니다 — <span style="color:#40a02b">초록</span> 97% 이상 · <span style="color:#df8e1d">노랑</span> 90~97% · <span style="color:#fe640b">주황</span> 80~90% · <span style="color:#d20f39">빨강</span> 80% 미만(주황 · 빨강은 아래 알림의 주의 · 위험 선과 같은 자리입니다). 캐시 적중률은 서버 시작 이후 누적이 아니라 <strong>직전 갱신 이후 구간</strong> 값입니다(읽은 블록이 너무 적은 구간은 누적값으로 돌아갑니다).</td></tr>
         <tr><td><strong>Trend</strong></td><td>TPS·캐시·Active·Waiting의 최근 흐름. "지금 값"이 아니라 "아까보다 늘었나"를 봅니다. (메모리에만 남습니다)</td></tr>
         <tr><td><strong>Sessions / Performance</strong></td><td>상태별 세션 수와 성능 카운터(캐시·TPS·롤백·데드락·임시파일 등).</td></tr>
         <tr><td><strong>Wait Events</strong></td><td>지금 활성 세션이 무엇을 기다리는지(Lock·I/O 등)를 유형별로.</td></tr>
@@ -291,6 +292,7 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">B</span></td><td>다른 데이터베이스로 전환. 목록은 접속 권한(CONNECT)이 있는 DB만이며, 붙지 못하면 원래 DB를 그대로 봅니다</td></tr>
         <tr><td><span class="kbd">F1</span></td><td>도움말</td></tr>
         <tr><td><span class="kbd">Esc</span></td><td>팝업 닫기</td></tr>
+        <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">A</span></td><td>팝업 안에서는 그 팝업의 본문만 선택합니다(뒤의 메인 화면은 빠짐). 쿼리 · 실행 계획 블록을 클릭한 뒤 누르면 그 블록만 선택됩니다</td></tr>
     </table>
 
     <!-- 5. 세션 상세 -->
@@ -439,7 +441,7 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         <tr><td>대기 세션</td><td>대기 이벤트에 걸린 활성 세션 수</td><td>5 / 20</td></tr>
         <tr><td>idle in transaction</td><td>가장 오래 열려 있는 트랜잭션 (오류로 멈춘 <em>aborted</em> 포함)</td><td>300초 / 1800초</td></tr>
         <tr><td>장기 실행 쿼리</td><td>가장 오래 돌고 있는 쿼리</td><td>300초 / 1800초</td></tr>
-        <tr><td>캐시 적중률</td><td>구간 공유 버퍼 적중률 (낮을수록 나쁨, 누적 아님)</td><td>90% 미만 / 80% 미만</td></tr>
+        <tr><td>캐시 적중률</td><td>구간 공유 버퍼 적중률 (낮을수록 나쁨, 누적 아님)</td><td>90% 이하 / 80% 이하</td></tr>
         <tr><td>데드락</td><td>구간 내 발생 (즉시 알림, 마지막 발생 후 120초 유지)</td><td>1건이라도</td></tr>
         <tr><td>롤백 비율</td><td>구간 트랜잭션 중 롤백 비중</td><td>20% / 50%</td></tr>
         <tr><td>임시파일</td><td>구간에 디스크로 쏟아낸 양</td><td>100MB / 1GB</td></tr>
@@ -476,8 +478,21 @@ shared_preload_libraries = <span class="s">'pg_stat_statements'</span>
         <tr><td>Alert (N)</td><td>1단계는 수집한 스냅샷 재사용, 2단계는 <code>pg_database</code>·<code>pg_blocking_pids()</code>·<code>pg_stat_replication</code>·<code>pg_replication_slots</code> (60초 주기)</td></tr>
     </table>
 
+    <div class="info-box">
+        <strong>모니터링 전용 계정.</strong> superuser 가 아니어도 됩니다. 아래 두 줄이면 모든 화면이 superuser 와 같게 보입니다.
+        <pre style="margin:6px 0">CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
+GRANT pg_monitor TO pgtune_monitor;          -- 다른 사용자 세션 · 쿼리 · 크기 · 설정
+GRANT pg_signal_backend TO pgtune_monitor;   -- Ctrl+K 세션 취소가 필요할 때만</pre>
+        <ul style="margin-bottom:0">
+            <li><code>pg_monitor</code>(안의 <code>pg_read_all_stats</code>)가 없으면 PostgreSQL 이 다른 사용자 세션의 상태 · 쿼리를 가립니다.
+                pgtune 은 그 수를 세어 세션 목록 · Connections · Locks 위에 <em>"N sessions of other users are hidden"</em> 으로 알리고,
+                Top SQL 에서는 가려진 문장 수를 알립니다 — "세션 없음" 으로 착각하지 않도록.</li>
+            <li>권한이 없어 크기를 못 읽는 테이블스페이스 · DB 는 Disk 에서 <code>n/a</code> 로, 데이터 디렉터리는 Server Info 에서 <em>(needs pg_read_all_settings)</em> 로 보입니다.</li>
+        </ul>
+    </div>
+
     <div class="footer">
-        pgtune v3.2.1 — PostgreSQL 실시간 모니터<br>
+        pgtune v3.3 — PostgreSQL 실시간 모니터<br>
         Built with .NET 11 &middot; Blazor Hybrid &middot; Npgsql &middot; ClosedXML &middot; SQLite<br>
         &copy; 2026 DBMS Works. All rights reserved.
     </div>

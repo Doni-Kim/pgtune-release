@@ -95,6 +95,19 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - `database` 를 비워 두면 접속한 뒤 DB 를 고르는 화면이 뜹니다.
 - `alerts`, `topSql`, `logRetention` 같은 절은 적지 않아도 됩니다. 프로그램을 닫을 때 기본값으로 채워 넣어 주니, 그 뒤에 보고 고치시면 됩니다.
 
+## 모니터링 전용 계정
+
+superuser 가 아니어도 됩니다. 아래 권한이면 모든 화면이 superuser 와 같게 보입니다.
+
+```sql
+CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
+GRANT pg_monitor TO pgtune_monitor;          -- 다른 사용자 세션 · 쿼리 · 크기 · 설정
+GRANT pg_signal_backend TO pgtune_monitor;   -- Ctrl+K(세션 취소)가 필요할 때만
+```
+
+`pg_monitor` 가 없으면 PostgreSQL 이 다른 사용자 세션을 가립니다. pgtune 은 빈 화면처럼 보이지 않게
+세션 목록 · Connections · Locks 위에 "N sessions of other users are hidden — grant pg_monitor …" 로 알려 줍니다.
+
 ## 사용 조건
 
 업무든 개인이든 자유롭게 쓰셔도 됩니다. 실행 파일 재배포와 리버스 엔지니어링은 삼가 주세요.

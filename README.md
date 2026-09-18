@@ -102,6 +102,19 @@ Errors are written to `pgtune.log` next to the executable.
 - Sections such as `alerts`, `topSql` and `logRetention` are optional. pgtune fills them in with
   defaults when it closes, so you can see what is there to tune.
 
+## Monitoring account
+
+A superuser is not required. These two grants make every screen show the same as for a superuser:
+
+```sql
+CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
+GRANT pg_monitor TO pgtune_monitor;          -- other users' sessions and queries, sizes, settings
+GRANT pg_signal_backend TO pgtune_monitor;   -- only if you want Ctrl+K (cancel a session)
+```
+
+Without `pg_monitor`, PostgreSQL hides other users' sessions. pgtune says so instead of looking empty —
+"N sessions of other users are hidden — grant pg_monitor …" above the session list, Connections and Locks.
+
 ## Terms
 
 Free to use, at work or at home. Please do not redistribute the binary or reverse-engineer it.
