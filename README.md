@@ -43,6 +43,13 @@ diagnostics behind it. Free to use, no strings attached.
   - Old rows are trimmed automatically (30 days of metrics, 7 days of sessions by default; configurable).
 - **Excel export** — built on ClosedXML, so the `.xlsx` is written even without Excel installed,
   and opens automatically when Excel is there.
+- **Blocking tree** — `A` shows who blocks whom as a tree (decided by `pg_blocking_pids()`); the session list has a
+  Blocked by column, and `F5` shows blockers together with the sessions they block.
+- **Find and stop** — `/` filters the session list by text; `Ctrl+K` cancels the query or terminates the connection.
+- **When an alert fires** — the blocking tree and the statements involved are saved to a file under `captures\`,
+  and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
+- In History, click a point in time to see the sessions that were logged at that moment.
+- Logs, Excel files and captures are kept per server, in `{host_port}\{database}\` next to the executable.
 - Press `F1` for the keyboard shortcuts.
 
 The bundled `pgtune.html` is the full manual (in Korean).
@@ -109,7 +116,7 @@ A superuser is not required. These two grants make every screen show the same as
 ```sql
 CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
 GRANT pg_monitor TO pgtune_monitor;          -- other users' sessions and queries, sizes, settings
-GRANT pg_signal_backend TO pgtune_monitor;   -- only if you want Ctrl+K (cancel a session)
+GRANT pg_signal_backend TO pgtune_monitor;   -- only if you want Ctrl+K (cancel a query / terminate a connection)
 ```
 
 Without `pg_monitor`, PostgreSQL hides other users' sessions. pgtune says so instead of looking empty —

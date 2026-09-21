@@ -17,9 +17,9 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 |---|---|
 | ![대시보드](screenshots/dashboard.png) | ![Top SQL](screenshots/top-sql.png) |
 
-| 락 체인 | History |
+| Lock Chain | History |
 |---|---|
-| ![락 체인](screenshots/locks.png) | ![History](screenshots/history.png) |
+| ![Lock Chain](screenshots/locks.png) | ![History](screenshots/history.png) |
 
 ![알림](screenshots/alerts.png)
 
@@ -32,7 +32,7 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 ## 주요 기능
 
 - 실시간 대시보드: 세션·성능·대기 이벤트·추이 그래프
-- Top SQL, 락 체인, 인덱스 진단, VACUUM/XID, 복제 상태
+- Top SQL, Lock Chain, 인덱스 진단, VACUUM/XID, 복제 상태
 - 임계값 알림(접속 포화·데드락·복제 지연 등)
 - **History**: `L` 로 로컬 SQLite 에 모니터링 데이터를 쌓고, `H` 로 지난 흐름을 되짚습니다.
   - 구간은 1시간 / 6시간 / 24시간 / 1주 / 1개월 / 전체 중에서 고릅니다.
@@ -40,6 +40,11 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
   - 차트에 마우스를 올리면 그 시각의 값이 나오고, 옅은 띠로 그 구간의 최소~최대를 같이 보여 줍니다.
   - 오래된 기록은 자동으로 지웁니다(기본 지표 30일·세션 7일, `pgtune.json` 에서 조정).
 - Excel 저장: ClosedXML 기반이라 Excel 이 없어도 xlsx 파일이 저장되고, 설치돼 있으면 저장 후 자동으로 열립니다.
+- **막힘 트리**: `A` 에서 누가 누구를 막는지 트리로 봅니다(판정은 `pg_blocking_pids()`). 세션 표에 Blocked by 열이 있고, `F5` 는 막는 세션과 막힌 세션을 함께 보여 줍니다.
+- **찾기 · 끊기**: `/` 로 세션을 글자로 거르고, `Ctrl+K` 로 쿼리만 취소하거나 접속째 끊습니다.
+- **알림이 켜지는 순간**: 막힘 트리와 얽힌 문장을 `captures\` 아래 파일로 남기고, 위험 알림은 창이 앞에 없을 때 작업 표시줄 깜빡임 · Windows 알림으로 알려 줍니다.
+- History 에서 한 시점을 누르면 그때 기록된 세션이 나옵니다.
+- 로그 · Excel · 캡처는 서버별로 exe 옆 `{호스트_포트}\{DB명}\` 에 들어갑니다.
 - `F1` 을 누르면 단축키 도움말이 나옵니다.
 
 자세한 사용법은 첨부한 `pgtune.html` 문서를 참고해 주세요. 사용상 제한 없습니다.
@@ -102,7 +107,7 @@ superuser 가 아니어도 됩니다. 아래 권한이면 모든 화면이 super
 ```sql
 CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
 GRANT pg_monitor TO pgtune_monitor;          -- 다른 사용자 세션 · 쿼리 · 크기 · 설정
-GRANT pg_signal_backend TO pgtune_monitor;   -- Ctrl+K(세션 취소)가 필요할 때만
+GRANT pg_signal_backend TO pgtune_monitor;   -- Ctrl+K(쿼리 취소 · 접속 끊기)가 필요할 때만
 ```
 
 `pg_monitor` 가 없으면 PostgreSQL 이 다른 사용자 세션을 가립니다. pgtune 은 빈 화면처럼 보이지 않게
