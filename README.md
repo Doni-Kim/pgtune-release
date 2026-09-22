@@ -50,6 +50,10 @@ diagnostics behind it. Free to use, no strings attached.
   and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
 - In History, click a point in time to see the sessions that were logged at that moment.
 - Logs, Excel files and captures are kept per server, in `{host_port}\{database}\` next to the executable.
+- **Most read tables** (Index, `X`) — which tables are read from outside `shared_buffers`, partitions added up, with
+  how much of all reads the rows account for; `Δ delta` shows only what was read since a baseline you set.
+- `sslMode` `verify-ca` / `verify-full` are checked against a real SSL server; when a certificate is rejected the
+  connection dialog says what to change (trust the CA in the Windows store or set `PGSSLROOTCERT`).
 - Press `F1` for the keyboard shortcuts.
 
 The bundled `pgtune.html` is the full manual (in Korean).

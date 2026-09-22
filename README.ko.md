@@ -45,6 +45,8 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - **알림이 켜지는 순간**: 막힘 트리와 얽힌 문장을 `captures\` 아래 파일로 남기고, 위험 알림은 창이 앞에 없을 때 작업 표시줄 깜빡임 · Windows 알림으로 알려 줍니다.
 - History 에서 한 시점을 누르면 그때 기록된 세션이 나옵니다.
 - 로그 · Excel · 캡처는 서버별로 exe 옆 `{호스트_포트}\{DB명}\` 에 들어갑니다.
+- **Most read tables**(Index, `X`): `shared_buffers` 밖에서 많이 읽힌 테이블 — 파티션은 합쳐서, 보이는 줄들이 전체 읽기의 몇 % 인지 함께. `Δ delta` 로 기준선 이후에 읽힌 테이블만.
+- `sslMode` 의 `verify-ca` · `verify-full` 을 실제 SSL 서버로 확인했고, 인증서가 거부되면 접속 창에 무엇을 바꾸면 되는지 나옵니다(Windows 저장소에 CA 넣기 또는 `PGSSLROOTCERT`).
 - `F1` 을 누르면 단축키 도움말이 나옵니다.
 
 자세한 사용법은 첨부한 `pgtune.html` 문서를 참고해 주세요. 사용상 제한 없습니다.
