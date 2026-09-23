@@ -45,6 +45,7 @@ diagnostics behind it. Free to use, no strings attached.
   and opens automatically when Excel is there.
 - **Blocking tree** — `A` shows who blocks whom as a tree (decided by `pg_blocking_pids()`); the session list has a
   Blocked by column, and `F5` shows blockers together with the sessions they block.
+- **Session list** — `F2` All shows every session, idle ones included (working sessions first, idle at the bottom with the last statement they ran); `F3`–`F5` narrow it to running / waiting / blocking.
 - **Find and stop** — `/` filters the session list by text; `Ctrl+K` cancels the query or terminates the connection.
 - **When an alert fires** — the blocking tree and the statements involved are saved to a file under `captures\`,
   and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
