@@ -34,7 +34,7 @@ diagnostics behind it. Free to use, no strings attached.
 ## What it does
 
 - **Live dashboard** — sessions, throughput, wait events, trend graphs.
-- **Panels** — Top SQL, lock chains, index diagnostics, VACUUM/XID, replication status.
+- **Panels** — Top SQL (click a column header to re-sort what is on screen), lock chains, index diagnostics, VACUUM/XID, replication status.
 - **Alerts** — connection saturation, deadlocks, replication lag and more, with your own thresholds.
 - **History** — press `L` to log every snapshot into a local SQLite file, then `H` to look back.
   - Ranges: 1 hour / 6 hours / 24 hours / 1 week / 1 month / all.
@@ -42,7 +42,10 @@ diagnostics behind it. Free to use, no strings attached.
     rollbacks, deadlocks, temp file throughput, buffers written by backends.
   - Hover the chart to read the value at that moment; the shaded band shows the min–max of each column.
   - Old rows are trimmed automatically (30 days of metrics, 7 days of sessions by default; configurable).
-- **Excel export** — built on ClosedXML, so the `.xlsx` is written even without Excel installed,
+- **Object Info** — in the session detail, `[Object Info]` shows every table the execution plan reads: size, columns with their
+  statistics, indexes (the ones this plan uses are highlighted) and partitions. Columns in the plan's conditions are marked, and a cast
+  on a column — which keeps an index from being used — is flagged. Nothing is run again; tables are taken from the plan, never guessed.
+- **Excel export** (`Ctrl+X`) — four sheets: session, SQL, plan and the same Object Info. Built on ClosedXML, so the `.xlsx` is written even without Excel installed,
   and opens automatically when Excel is there.
 - **Blocking tree** — `A` shows who blocks whom as a tree (decided by `pg_blocking_pids()`); the session list has a
   Blocked by column, and `F5` shows blockers together with the sessions they block.
