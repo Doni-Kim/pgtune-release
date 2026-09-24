@@ -60,6 +60,9 @@ diagnostics behind it. Free to use, no strings attached.
   `pg_reload_conf`, `pg_wal_lsn_diff` …). The list, arguments and descriptions are read from the connected server,
   functions added by extensions included, so they always match its version. 70 of the most used come with a sample
   to copy — pgtune never runs them. No internet needed.
+- **Admin commands** — the same tab lists 21 admin SQL commands, PostgreSQL's counterpart of SQL Server's DBCC:
+  `VACUUM`, `ANALYZE`, `REINDEX`, `CLUSTER`, `CHECKPOINT`, `ALTER SYSTEM`, `CREATE INDEX CONCURRENTLY` … with the lock each
+  takes, whether it can run in a transaction and the permission it needs; plus amcheck's integrity checks.
 - **One settings file per server** — with two or more next to the executable, pgtune asks which one to use at startup.
 - **Settings screen** — `O` changes the collection interval (3–60 s, 5 by default), log retention, Top SQL, Excel, alert
   thresholds and which sessions `L` logs. Values are checked, saved to the settings file in use and applied at once;
@@ -67,7 +70,7 @@ diagnostics behind it. Free to use, no strings attached.
 - **12 themes** — six light, six dark, GitHub Light by default; pick one from the top bar.
 - **Server not answering at startup** — a small window shows whom pgtune is connecting to and for how long, with
   Cancel to fix the connection, instead of an empty screen for 20-odd seconds.
-- Press `F1` for the keyboard shortcuts, and again for the Admin Functions tab.
+- Press `F1` for the keyboard shortcuts, and again for the Admin Functions & Commands tab.
 
 The bundled `pgtune.html` is the full manual (in Korean).
 
