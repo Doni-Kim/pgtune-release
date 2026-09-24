@@ -27,7 +27,8 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 
 - 압축을 풀고 폴더째 둔 뒤 `pgtune.exe` 를 실행하면 됩니다 (Single File Publishing).
 - .NET 설치 불필요 — 런타임이 실행 파일에 포함되어 있습니다.
-- 설정은 같은 폴더의 `pgtune.json` 하나만 채우면 됩니다.
+- 설정은 같은 폴더의 접속 파일만 채우면 됩니다. zip 에 `pgtuneNode1.json` · `pgtuneNode2.json` 두 개가 들어 있습니다 — 서버 하나에 파일 하나.
+  서버가 하나면 한 파일만 채우고 나머지는 지우세요.
 
 ## 주요 기능
 
@@ -38,7 +39,7 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
   - 구간은 1시간 / 6시간 / 24시간 / 1주 / 1개월 / 전체 중에서 고릅니다.
   - 지표는 TPS · 캐시 적중률 · Active · Waiting · 접속 수 · Idle in tx · 롤백 · 데드락 · 임시파일 · BufBackend 열 가지입니다.
   - 차트에 마우스를 올리면 그 시각의 값이 나오고, 옅은 띠로 그 구간의 최소~최대를 같이 보여 줍니다.
-  - 오래된 기록은 자동으로 지웁니다(기본 지표 30일·세션 7일, `pgtune.json` 에서 조정).
+  - 오래된 기록은 자동으로 지웁니다(기본 지표 30일·세션 7일, 설정 파일에서 조정).
 - Excel 저장: ClosedXML 기반이라 Excel 이 없어도 xlsx 파일이 저장되고, 설치돼 있으면 저장 후 자동으로 열립니다.
 - **막힘 트리**: `A` 에서 누가 누구를 막는지 트리로 봅니다(판정은 `pg_blocking_pids()`). 세션 표에 Blocked by 열이 있고, `F5` 는 막는 세션과 막힌 세션을 함께 보여 줍니다.
 - **세션 표**: `F2` All 은 idle 세션까지 전부(일하는 세션이 먼저, idle 은 맨 아래에 마지막으로 돌린 문장과 함께), `F3`~`F5` 는 실행 중 / 대기 / 막힘만 추립니다.
@@ -48,7 +49,14 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - 로그 · Excel · 캡처는 서버별로 exe 옆 `{호스트_포트}\{DB명}\` 에 들어갑니다.
 - **Most read tables**(Index, `X`): `shared_buffers` 밖에서 많이 읽힌 테이블 — 파티션은 합쳐서, 보이는 줄들이 전체 읽기의 몇 % 인지 함께. `Δ delta` 로 기준선 이후에 읽힌 테이블만.
 - `sslMode` 의 `verify-ca` · `verify-full` 을 실제 SSL 서버로 확인했고, 인증서가 거부되면 접속 창에 무엇을 바꾸면 되는지 나옵니다(Windows 저장소에 CA 넣기 또는 `PGSSLROOTCERT`).
-- `F1` 을 누르면 단축키 도움말이 나옵니다.
+- **Admin Functions**: `F1` 의 두 번째 탭에서 PostgreSQL 관리 함수(`pg_terminate_backend` · `pg_reload_conf` · `pg_wal_lsn_diff` …)를 글자를 칠 때마다 찾습니다.
+  목록 · 인자 · 설명은 접속한 서버에서 읽어(확장이 더한 함수 포함) 서버 버전과 늘 맞고, 자주 쓰는 70개에는 복사해 쓰는 샘플이 있습니다 — pgtune 은 실행하지 않습니다. 인터넷이 필요 없습니다.
+- **서버마다 설정 파일 하나**: exe 옆에 둘 이상이면 시작할 때 어느 것으로 붙을지 고르는 창이 뜹니다.
+- **설정 창**: `O` 로 수집 주기(3~60초, 기본 5초) · 로그 보관 · Top SQL · Excel · 알림 임계값 · `L` 로깅이 남길 세션을 화면에서 고칩니다.
+  값을 검사한 뒤 지금 쓰는 설정 파일에 저장하고 바로 적용합니다. 접속 정보는 시작 접속 창에서만 바꿉니다.
+- **테마 12종**: 밝은 6 · 어두운 6, 기본은 GitHub Light. 상단 바에서 고릅니다.
+- **시작할 때 서버가 응답하지 않으면**: 20초 남짓 빈 화면 대신, 누구에게 몇 초째 붙는 중인지 보이는 작은 창이 뜨고 Cancel 로 접속 정보를 고칠 수 있습니다.
+- `F1` 을 누르면 단축키 도움말이, 한 번 더 누르면 Admin Functions 탭이 나옵니다.
 
 자세한 사용법은 첨부한 `pgtune.html` 문서를 참고해 주세요. 사용상 제한 없습니다.
 
@@ -78,11 +86,16 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 
 ## 기술 스택
 
-- .NET 11.0 (x64), C# 14, Blazor Hybrid
+- .NET 11.0 (x64), C# 15, Blazor Hybrid
 - 패키지: Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
 - 실행 파일에 묶인 위 오픈소스들의 저작권 고지 · 라이선스 전문: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (zip 안에도 들어 있습니다)
 
-## pgtune.json 예시
+## 접속 파일 예시 (`pgtuneNode1.json` …)
+
+서버마다 파일 하나, 이름은 자유입니다(`prod.json` · `dev.json` …). `pgtune.exe` 옆에 둘 이상이면 시작할 때 고르는 창이 뜨고
+(목록에는 `user@server:port/database` 만 — 비밀번호는 보이지 않습니다), 하나뿐이면 바로 붙습니다.
+고른 파일이 그 실행의 설정이 되어 암호화된 비밀번호 · 창 위치 · 테마가 그 파일에 저장됩니다.
+같은 폴더의 pgtune 은 한 번에 하나만 뜨니, 여러 서버를 동시에 보려면 폴더를 나누세요.
 
 ```json
 {
@@ -95,13 +108,14 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
       "database": ""
     }
   ],
-  "interval": 4
+  "interval": 5
 }
 ```
 
 - `password` 는 평문으로 적으면 첫 실행 때 자동 암호화됩니다.
 - `database` 를 비워 두면 접속한 뒤 DB 를 고르는 화면이 뜹니다.
-- `alerts`, `topSql`, `logRetention` 같은 절은 적지 않아도 됩니다. 프로그램을 닫을 때 기본값으로 채워 넣어 주니, 그 뒤에 보고 고치시면 됩니다.
+- `interval` 은 수집 주기(초)입니다. 3~60, 적지 않으면 5.
+- `alerts`, `topSql`, `logRetention`, `logFilter`(`L` 로깅이 남길 세션) 같은 절은 적지 않아도 됩니다. 프로그램을 닫을 때 기본값으로 채워 넣어 주고, `O` 로 화면에서 고칠 수 있습니다.
 
 ## 모니터링 전용 계정
 

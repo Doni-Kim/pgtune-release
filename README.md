@@ -28,7 +28,8 @@ diagnostics behind it. Free to use, no strings attached.
 
 - Unzip, keep the folder together, and run `pgtune.exe` (single-file publish).
 - No .NET install needed — the runtime is inside the executable.
-- The only thing to set up is `pgtune.json` next to the executable.
+- The only thing to set up is a connection file next to the executable. The zip ships two, `pgtuneNode1.json` and
+  `pgtuneNode2.json` — one file per server. Watching a single server? Fill in one and delete the other.
 
 ## What it does
 
@@ -55,7 +56,18 @@ diagnostics behind it. Free to use, no strings attached.
   how much of all reads the rows account for; `Δ delta` shows only what was read since a baseline you set.
 - `sslMode` `verify-ca` / `verify-full` are checked against a real SSL server; when a certificate is rejected the
   connection dialog says what to change (trust the CA in the Windows store or set `PGSSLROOTCERT`).
-- Press `F1` for the keyboard shortcuts.
+- **Admin functions** — the second `F1` tab finds PostgreSQL admin functions as you type (`pg_terminate_backend`,
+  `pg_reload_conf`, `pg_wal_lsn_diff` …). The list, arguments and descriptions are read from the connected server,
+  functions added by extensions included, so they always match its version. 70 of the most used come with a sample
+  to copy — pgtune never runs them. No internet needed.
+- **One settings file per server** — with two or more next to the executable, pgtune asks which one to use at startup.
+- **Settings screen** — `O` changes the collection interval (3–60 s, 5 by default), log retention, Top SQL, Excel, alert
+  thresholds and which sessions `L` logs. Values are checked, saved to the settings file in use and applied at once;
+  the connection itself is changed only in the startup window.
+- **12 themes** — six light, six dark, GitHub Light by default; pick one from the top bar.
+- **Server not answering at startup** — a small window shows whom pgtune is connecting to and for how long, with
+  Cancel to fix the connection, instead of an empty screen for 20-odd seconds.
+- Press `F1` for the keyboard shortcuts, and again for the Admin Functions tab.
 
 The bundled `pgtune.html` is the full manual (in Korean).
 
@@ -88,11 +100,16 @@ Errors are written to `pgtune.log` next to the executable.
 
 ## Built with
 
-- .NET 11.0 (x64), C# 14, Blazor Hybrid
+- .NET 11.0 (x64), C# 15, Blazor Hybrid
 - Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
 - Copyright notices and license texts of these bundled components: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (also inside the zip)
 
-## pgtune.json
+## Connection files (`pgtuneNode1.json` …)
+
+One file per server, and any name works (`prod.json`, `dev.json` …). With two or more next to `pgtune.exe`, pgtune asks
+which one to use at startup — the list shows `user@server:port/database`, never the password. With just one, it connects
+straight away. The chosen file is that run's settings: the encrypted password, window position and theme are saved to it.
+Only one pgtune runs per folder; to watch several servers at the same time, use one folder per server.
 
 ```json
 {
@@ -105,14 +122,15 @@ Errors are written to `pgtune.log` next to the executable.
       "database": ""
     }
   ],
-  "interval": 4
+  "interval": 5
 }
 ```
 
 - Write `password` in plain text — it is encrypted on the first run and stored back.
 - Leave `database` empty to pick a database from a list after connecting.
-- Sections such as `alerts`, `topSql` and `logRetention` are optional. pgtune fills them in with
-  defaults when it closes, so you can see what is there to tune.
+- `interval` is the collection interval in seconds, 3–60 (5 when left out).
+- Sections such as `alerts`, `topSql`, `logRetention` and `logFilter` (which sessions `L` logs) are optional.
+  pgtune fills them in with defaults when it closes, and `O` edits them on screen.
 
 ## Monitoring account
 
