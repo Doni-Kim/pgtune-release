@@ -52,6 +52,7 @@ diagnostics behind it. Free to use, no strings attached.
 - **Session list** — `F2` All shows every session, idle ones included (working sessions first, idle at the bottom with the last statement they ran); `F3`–`F5` narrow it to running / waiting / blocking.
 - **Find and stop** — `/` filters the session list by text; `Ctrl+K` cancels the query or terminates the connection.
 - **Find SQL** (`Ctrl+F`) — type a `queryid` to open that statement's statistics, plan and Object Info without going through Top SQL.
+- **SQL tab** — the statement is the first tab of the detail (`[SQL] [Plan] [Object Info]`), and a one-line statement is laid out by clause. Only spaces and line breaks outside quotes change, never a character; `[Beautify]` switches to the original and back.
 - **When an alert fires** — the blocking tree and the statements involved are saved to a file under `captures\`,
   and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
 - In History, click a point in time to see the sessions that were logged at that moment.
