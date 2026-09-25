@@ -42,7 +42,7 @@ diagnostics behind it. Free to use, no strings attached.
     rollbacks, deadlocks, temp file throughput, buffers written by backends.
   - Hover the chart to read the value at that moment; the shaded band shows the min–max of each column.
   - Old rows are trimmed automatically (30 days of metrics, 7 days of sessions by default; configurable).
-- **Object Info** — in the session detail, `[Object Info]` shows every table the execution plan reads: size, columns with their
+- **Object Info** — in the session detail and in Top SQL (click a row), `[Object Info]` shows every table the execution plan reads: size, columns with their
   statistics, indexes (the ones this plan uses are highlighted) and partitions. Columns in the plan's conditions are marked, and a cast
   on a column — which keeps an index from being used — is flagged. Nothing is run again; tables are taken from the plan, never guessed.
 - **Excel export** (`Ctrl+X`) — four sheets: session, SQL, plan and the same Object Info. Built on ClosedXML, so the `.xlsx` is written even without Excel installed,
