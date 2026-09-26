@@ -15,13 +15,19 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 
 | 실시간 대시보드 | Top SQL |
 |---|---|
-| ![대시보드](screenshots/dashboard.png) | ![Top SQL](screenshots/top-sql.png) |
+| ![대시보드](screenshots/dashboard.jpg) | ![Top SQL](screenshots/top-sql.jpg) |
 
-| Lock Chain | History |
+| Lock Chain | 세션 상세 |
 |---|---|
-| ![Lock Chain](screenshots/locks.png) | ![History](screenshots/history.png) |
+| ![Lock Chain](screenshots/locks.jpg) | ![세션 상세](screenshots/session-detail.jpg) |
 
-![알림](screenshots/alerts.png)
+| History | Vacuum |
+|---|---|
+| ![History](screenshots/history.jpg) | ![Vacuum](screenshots/vacuum.jpg) |
+
+| 알림 | 인덱스 진단 |
+|---|---|
+| ![알림](screenshots/alerts.jpg) | ![인덱스](screenshots/indexes.jpg) |
 
 ## 설치·설정
 

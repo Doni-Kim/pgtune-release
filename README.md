@@ -16,13 +16,19 @@ diagnostics behind it. Free to use, no strings attached.
 
 | Live dashboard | Top SQL |
 |---|---|
-| ![Dashboard](screenshots/dashboard.png) | ![Top SQL](screenshots/top-sql.png) |
+| ![Dashboard](screenshots/dashboard.jpg) | ![Top SQL](screenshots/top-sql.jpg) |
 
-| Lock chains | History |
+| Lock chains | Session detail |
 |---|---|
-| ![Locks](screenshots/locks.png) | ![History](screenshots/history.png) |
+| ![Locks](screenshots/locks.jpg) | ![Session detail](screenshots/session-detail.jpg) |
 
-![Alerts](screenshots/alerts.png)
+| History | Vacuum |
+|---|---|
+| ![History](screenshots/history.jpg) | ![Vacuum](screenshots/vacuum.jpg) |
+
+| Alerts | Index diagnostics |
+|---|---|
+| ![Alerts](screenshots/alerts.jpg) | ![Indexes](screenshots/indexes.jpg) |
 
 ## Install
 
