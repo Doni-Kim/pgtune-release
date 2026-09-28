@@ -38,12 +38,13 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 
 ## 주요 기능
 
-- 실시간 대시보드: 세션·성능·대기 이벤트·추이 그래프
+- 실시간 대시보드: 게이지 둘 · 추이 그래프 여섯(왼쪽은 들어온 일, 오른쪽은 그 대가) · 세션 수 · 성능 카운터 열여덟 · 대기 이벤트 · 세션 목록을 한 화면에. Connections · Waiting 은 클라이언트 세션만 셉니다.
 - Top SQL(머리글을 눌러 화면에서 다시 정렬), Lock Chain, 인덱스 진단, VACUUM/XID, 복제 상태
-- 임계값 알림(접속 포화·데드락·복제 지연 등)
+- 임계값 알림(접속 포화·데드락·복제 지연 등). 임계값 0 은 그 단계를 끕니다.
 - **History**: `L` 로 로컬 SQLite 에 모니터링 데이터를 쌓고, `H` 로 지난 흐름을 되짚습니다.
   - 구간은 1시간 / 6시간 / 24시간 / 1주 / 1개월 / 전체 중에서 고릅니다.
-  - 지표는 TPS · 캐시 적중률 · Active · Waiting · 접속 수 · Idle in tx · 롤백 · 데드락 · 임시파일 · BufBackend 열 가지입니다.
+  - 지표는 메인 화면의 값 전부입니다 — 칩 30개가 메인 화면의 패널대로 네 줄(Gauges · Trend · Sessions · Performance)이고 라벨도 같습니다.
+  - 바이트 값은 구간마다 단위(B/s ~ GB/s)를 고릅니다. 기록에 없는 값은 0 으로 그리지 않고 비웁니다.
   - 차트에 마우스를 올리면 그 시각의 값이 나오고, 옅은 띠로 그 구간의 최소~최대를 같이 보여 줍니다.
   - 오래된 기록은 자동으로 지웁니다(기본 지표 30일·세션 7일, 설정 파일에서 조정).
 - **Object Info**: 세션 상세와 Top SQL(줄을 누르면)의 `[Object Info]` 가 실행 계획이 읽는 테이블마다 크기 · 컬럼과 통계 · 인덱스(이 계획이 쓴 것은 강조) · 파티션을 보입니다.
@@ -63,7 +64,7 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - `sslMode` 의 `verify-ca` · `verify-full` 을 실제 SSL 서버로 확인했고, 인증서가 거부되면 접속 창에 무엇을 바꾸면 되는지 나옵니다(Windows 저장소에 CA 넣기 또는 `PGSSLROOTCERT`).
 - **Admin Functions & Commands**: `F1` 의 두 번째 탭에서 PostgreSQL 관리 함수(`pg_terminate_backend` · `pg_reload_conf` · `pg_wal_lsn_diff` …)를 글자를 칠 때마다 찾습니다.
   목록 · 인자 · 설명은 접속한 서버에서 읽어(확장이 더한 함수 포함) 서버 버전과 늘 맞고, 자주 쓰는 70개에는 복사해 쓰는 샘플이 있습니다 — pgtune 은 실행하지 않습니다. 인터넷이 필요 없습니다.
-- **관리 명령문**: 같은 탭에 SQL Server 의 DBCC 에 해당하는 관리 명령문 21개가 있습니다 — `VACUUM` · `ANALYZE` · `REINDEX` · `CLUSTER` · `CHECKPOINT` · `ALTER SYSTEM` · `CREATE INDEX CONCURRENTLY` …
+- **관리 명령문**: 같은 탭에 SQL Server 의 DBCC 에 해당하는 관리 명령문 23개가 있습니다 — `VACUUM` · `ANALYZE` · `REINDEX` · `CLUSTER` · `CHECKPOINT` · `ALTER SYSTEM` · `CREATE INDEX CONCURRENTLY` …
   잡는 락 · 트랜잭션 안에서 도는지 · 필요한 권한과 함께, amcheck 의 무결성 점검도 있습니다.
 - **서버마다 설정 파일 하나**: exe 옆에 둘 이상이면 시작할 때 어느 것으로 붙을지 고르는 창이 뜹니다.
 - **설정 창**: `O` 로 수집 주기(3~60초, 기본 5초) · 로그 보관 · Top SQL · Excel · 알림 임계값 · `L` 로깅이 남길 세션을 화면에서 고칩니다.
@@ -79,9 +80,9 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - UI 가 Web 기반(Blazor Hybrid)이라 Windows 전용입니다. Linux·macOS 에서는 단독 실행되지 않습니다.
 - 코드는 ConfuserEx 로 난독화(무료 툴이라 강력한 수준은 아닙니다).
 
-## 화면이 안 뜬다면 (WebView2)
+## WebView2 런타임
 
-창은 뜨는데 내용이 백지라면 WebView2 런타임이 없는 경우입니다.
+pgtune 은 화면을 Microsoft Edge WebView2 런타임으로 그립니다. 런타임이 없으면 시작할 때 그렇게 알리고 받는 곳을 보여 줍니다(3.10 까지는 빈 창이 떴습니다).
 
 - **Windows 11**: OS 에 기본 내장이라 항상 있습니다.
 - **Windows 10**: 2021년 이후 Windows Update 로 대부분 자동 배포됐지만, 업데이트를 오래 안 한 PC 나 LTSC 같은 특수 에디션에는 없을 수 있습니다.
@@ -127,7 +128,8 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 ```
 
 - `password` 는 평문으로 적으면 첫 실행 때 자동 암호화됩니다.
-- `database` 를 비워 두면 접속한 뒤 DB 를 고르는 화면이 뜹니다.
+  3.10 까지 만들어진 설정 파일의 `.bak` 에는 비밀번호가 평문으로 남아 있을 수 있습니다 — 직접 지우세요.
+- `database` 를 비워 두면 접속한 뒤 DB 를 고르는 화면이 뜹니다(목록은 계정 이름과 같은 DB → `postgres` → `template1` 순으로 붙어 읽습니다).
 - `interval` 은 수집 주기(초)입니다. 3~60, 적지 않으면 5.
 - `alerts`, `topSql`, `logRetention`, `logFilter`(`L` 로깅이 남길 세션) 같은 절은 적지 않아도 됩니다. 프로그램을 닫을 때 기본값으로 채워 넣어 주고, `O` 로 화면에서 고칠 수 있습니다.
 

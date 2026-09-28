@@ -39,13 +39,14 @@ diagnostics behind it. Free to use, no strings attached.
 
 ## What it does
 
-- **Live dashboard** — sessions, throughput, wait events, trend graphs.
+- **Live dashboard** — two gauges, six trend graphs (what comes in on the left, what it costs on the right), session counts,
+  eighteen performance counters, wait events and the session list on one screen. Connections and Waiting count client sessions only.
 - **Panels** — Top SQL (click a column header to re-sort what is on screen), lock chains, index diagnostics, VACUUM/XID, replication status.
-- **Alerts** — connection saturation, deadlocks, replication lag and more, with your own thresholds.
+- **Alerts** — connection saturation, deadlocks, replication lag and more, with your own thresholds. A threshold of 0 turns that level off.
 - **History** — press `L` to log every snapshot into a local SQLite file, then `H` to look back.
   - Ranges: 1 hour / 6 hours / 24 hours / 1 week / 1 month / all.
-  - Ten metrics: TPS, cache hit ratio, active, waiting, total connections, idle in transaction,
-    rollbacks, deadlocks, temp file throughput, buffers written by backends.
+  - Every value on the main screen — 30 chips in the rows of the main screen (Gauges, Trend, Sessions, Performance), with the same labels.
+  - Byte values pick their unit (B/s to GB/s) per range. A value that was not recorded is left empty, not drawn as 0.
   - Hover the chart to read the value at that moment; the shaded band shows the min–max of each column.
   - Old rows are trimmed automatically (30 days of metrics, 7 days of sessions by default; configurable).
 - **Object Info** — in the session detail and in Top SQL (click a row), `[Object Info]` shows every table the execution plan reads: size, columns with their
@@ -73,7 +74,7 @@ diagnostics behind it. Free to use, no strings attached.
   `pg_reload_conf`, `pg_wal_lsn_diff` …). The list, arguments and descriptions are read from the connected server,
   functions added by extensions included, so they always match its version. 70 of the most used come with a sample
   to copy — pgtune never runs them. No internet needed.
-- **Admin commands** — the same tab lists 21 admin SQL commands, PostgreSQL's counterpart of SQL Server's DBCC:
+- **Admin commands** — the same tab lists 23 admin SQL commands, PostgreSQL's counterpart of SQL Server's DBCC:
   `VACUUM`, `ANALYZE`, `REINDEX`, `CLUSTER`, `CHECKPOINT`, `ALTER SYSTEM`, `CREATE INDEX CONCURRENTLY` … with the lock each
   takes, whether it can run in a transaction and the permission it needs; plus amcheck's integrity checks.
 - **One settings file per server** — with two or more next to the executable, pgtune asks which one to use at startup.
@@ -93,9 +94,10 @@ The bundled `pgtune.html` is the full manual (in Korean).
 - PostgreSQL 14 and newer.
 - The code is obfuscated with ConfuserEx — a free tool, so do not expect strong protection.
 
-## Blank window? (WebView2)
+## WebView2 Runtime
 
-If the window opens but stays blank, the WebView2 runtime is missing.
+pgtune draws its window with the Microsoft Edge WebView2 Runtime. When it is missing, pgtune says so at startup and
+tells you where to get it (3.10 and earlier opened a blank window instead).
 
 - **Windows 11** — built into the OS, always present.
 - **Windows 10** — shipped through Windows Update since 2021, so it is there on most machines.
@@ -143,7 +145,9 @@ Only one pgtune runs per folder; to watch several servers at the same time, use 
 ```
 
 - Write `password` in plain text — it is encrypted on the first run and stored back.
-- Leave `database` empty to pick a database from a list after connecting.
+  A `.bak` of the file written by 3.10 or earlier may still hold the password in plain text — delete it.
+- Leave `database` empty to pick a database from a list after connecting (pgtune reads the list from the database named
+  after the account, then `postgres`, then `template1`).
 - `interval` is the collection interval in seconds, 3–60 (5 when left out).
 - Sections such as `alerts`, `topSql`, `logRetention` and `logFilter` (which sessions `L` logs) are optional.
   pgtune fills them in with defaults when it closes, and `O` edits them on screen.
