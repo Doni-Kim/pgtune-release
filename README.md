@@ -62,6 +62,7 @@ diagnostics behind it. Free to use, no strings attached.
 - **SQL tab** — the statement is the first tab of the detail (`[SQL] [Plan] [Object Info]`), and a one-line statement is laid out by clause. Only spaces and line breaks outside quotes change, never a character; `[Beautify]` switches to the original and back.
 - **One SQL window** (3.9) — the session detail, Top SQL and Find SQL open the same window: a summary with the sessions running the statement now, `[Statistics]` with everything `pg_stat_statements` keeps, and `[Excel]` in each.
   When `pg_stat_plans`, `pg_wait_sampling` or `pg_stat_kcache` is installed, plan history, the wait profile and OS figures appear too. Plan nodes are coloured (red only for a Seq Scan on a large table).
+  With `pg_hint_plan`, the plan tab also offers hints that fix the current plan (join order, join methods, scans) as a comment or a hint-table row (3.15, shown, never run).
 - **When an alert fires** — the blocking tree and the statements involved are saved to a file under `captures\`,
   and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
 - In History, click a point in time to see the sessions that were logged at that moment.
