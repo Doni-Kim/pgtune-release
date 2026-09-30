@@ -29,6 +29,10 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 |---|---|
 | ![알림](screenshots/alerts.jpg) | ![인덱스](screenshots/indexes.jpg) |
 
+| 실행 계획 · Fix this plan | Plan history |
+|---|---|
+| ![실행 계획](screenshots/plan.jpg) | ![Plan history](screenshots/plan-history.jpg) |
+
 ## 설치·설정
 
 - 압축을 풀고 폴더째 둔 뒤 `pgtune.exe` 를 실행하면 됩니다 (Single File Publishing).
@@ -57,7 +61,7 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - **SQL 탭**: 상세의 첫 탭(`[SQL] [Plan] [Object Info]`)이 문장이고, 한 줄 문장은 절마다 줄을 바꿔 보여 줍니다. 따옴표 밖의 공백 · 줄바꿈만 바뀌고 글자는 바뀌지 않으며, `[Beautify]` 로 원문과 오갑니다.
 - **SQL 창 한 포맷**(3.9): 세션 상세 · Top SQL · Find SQL 이 같은 창 — 요약과 지금 이 문장을 돌리는 세션, `pg_stat_statements` 를 전부 보는 `[Statistics]`, 창마다 `[Excel]`.
   `pg_stat_plans` · `pg_wait_sampling` · `pg_stat_kcache` 가 깔려 있으면 계획 이력 · 대기 분포 · OS 수치도 보입니다. 실행 계획의 노드 줄에 색이 붙습니다(빨강은 큰 테이블의 Seq Scan 만).
-  `pg_hint_plan` 이 있으면 Plan 탭에 지금 계획을 고정하는 힌트(조인 순서 · 조인 방식 · 스캔)를 주석 · 힌트 표 형태로 보입니다(3.15, 보여 주기만, 실행하지 않음).
+  `pg_hint_plan` 이 있으면 Plan 탭에 지금 계획을 고정하는 힌트(조인 순서 · 조인 방식 · 스캔)를 주석 · 힌트 표 형태로 보입니다(3.15, 보여 주기만, 실행하지 않음). `pg_stat_plans` 도 있으면 Plan history 의 계획마다 — 실제로 썼던 과거 계획으로 되돌리는 힌트(3.16).
 - **알림이 켜지는 순간**: 막힘 트리와 얽힌 문장을 `captures\` 아래 파일로 남기고, 위험 알림은 창이 앞에 없을 때 작업 표시줄 깜빡임 · Windows 알림으로 알려 줍니다.
 - History 에서 한 시점을 누르면 그때 기록된 세션이 나옵니다.
 - 로그 · Excel · 캡처는 서버별로 exe 옆 `{호스트_포트}\{DB명}\` 에 들어갑니다.
