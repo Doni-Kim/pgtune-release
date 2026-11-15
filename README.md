@@ -38,8 +38,9 @@ diagnostics behind it. Free to use, no strings attached.
 
 - Unzip, keep the folder together, and run `pgtune.exe` (single-file publish).
 - No .NET install needed — the runtime is inside the executable.
-- The only thing to set up is a connection file next to the executable. The zip ships two, `pgtuneNode1.json` and
-  `pgtuneNode2.json` — one file per server. Watching a single server? Fill in one and delete the other.
+- The connection window opens first: add a server with **+ New**, fill in host, port, user, password and database, and press
+  **Connect**. Connections and settings are kept in `pgtune.db` next to the executable (passwords encrypted).
+- Coming from 3.x? Overwrite `pgtune.exe` — the connection json files next to it are brought in on the first start (below).
 
 ## What it does
 
@@ -82,10 +83,14 @@ diagnostics behind it. Free to use, no strings attached.
 - **Admin commands** — the same tab lists 23 admin SQL commands, PostgreSQL's counterpart of SQL Server's DBCC:
   `VACUUM`, `ANALYZE`, `REINDEX`, `CLUSTER`, `CHECKPOINT`, `ALTER SYSTEM`, `CREATE INDEX CONCURRENTLY` … with the lock each
   takes, whether it can run in a transaction and the permission it needs; plus amcheck's integrity checks.
-- **One settings file per server** — with two or more next to the executable, pgtune asks which one to use at startup.
+- **Connection window** (4.0) — saved connections on the left (most recently used first), the selected one on the right.
+  **Test** connects, shows the server version and disconnects without saving; **Connect** saves only after it connects.
+- **Top bar** (4.0) — the dot before the address is blue while collecting (click it to disconnect) and red while reconnecting
+  or disconnected (click it to connect now). **Connection** switches to another server without closing the window, and the
+  GitHub icon opens this page.
 - **Settings screen** — `O` changes the collection interval (3–60 s, 5 by default), log retention, Top SQL, Excel, alert
-  thresholds and which sessions `L` logs. Values are checked, saved to the settings file in use and applied at once;
-  the connection itself is changed only in the startup window.
+  thresholds and which sessions `L` logs. Values are checked, saved for the current connection (Excel is shared by all
+  connections) and applied at once.
 - **12 themes** — six light, six dark, GitHub Light by default; pick one from the top bar.
 - **Server not answering at startup** — a small window shows whom pgtune is connecting to and for how long, with
   Cancel to fix the connection, instead of an empty screen for 20-odd seconds.
@@ -127,35 +132,22 @@ Errors are written to `pgtune.log` next to the executable.
 - Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
 - Copyright notices and license texts of these bundled components: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (also inside the zip)
 
-## Connection files (`pgtuneNode1.json` …)
+## Connections and settings (`pgtune.db`, 4.0)
 
-One file per server, and any name works (`prod.json`, `dev.json` …). With two or more next to `pgtune.exe`, pgtune asks
-which one to use at startup — the list shows `user@server:port/database`, never the password. With just one, it connects
-straight away. The chosen file is that run's settings: the encrypted password, window position and theme are saved to it.
-Only one pgtune runs per folder; to watch several servers at the same time, use one folder per server.
+Everything pgtune keeps lives in `pgtune.db` next to `pgtune.exe`: the connections, each connection's settings (interval,
+alerts, Top SQL, log retention, log filter) and the window position and theme. Settings are changed only in `O`, so there is
+no file to break by hand. To update pgtune, overwrite `pgtune.exe`; deleting `pgtune.db` starts from scratch.
+It holds the encrypted passwords — do not hand it to others.
 
-```json
-{
-  "databases": [
-    {
-      "userId": "postgres",
-      "password": "postgres",
-      "server": "127.0.0.1",
-      "port": "5432",
-      "database": ""
-    }
-  ],
-  "interval": 5
-}
-```
-
-- Write `password` in plain text — it is encrypted on the first run and stored back.
-  A `.bak` of the file written by 3.10 or earlier may still hold the password in plain text — delete it.
-- Leave `database` empty to pick a database from a list after connecting (pgtune reads the list from the database named
+- Leave **Database** empty to pick a database from a list after connecting (pgtune reads the list from the database named
   after the account, then `postgres`, then `template1`).
-- `interval` is the collection interval in seconds, 3–60 (5 when left out).
-- Sections such as `alerts`, `topSql`, `logRetention` and `logFilter` (which sessions `L` logs) are optional.
-  pgtune fills them in with defaults when it closes, and `O` edits them on screen.
+- **SSL mode** is `prefer` by default; `verify-ca` / `verify-full` check the server certificate.
+- Only one pgtune runs per folder. Switch servers with **Connection** on the top bar, or use one folder per server to watch
+  several at the same time.
+- **Coming from 3.x** — overwrite `pgtune.exe` in the old folder. On the first start the connection json files next to it
+  (`pgtune.json`, `pgtuneNode1.json` …) are read once, one connection per file, together with their settings; plain and
+  old-format passwords are encrypted. The json files are neither changed nor deleted — delete them yourself once you have
+  checked (safer if they held plain passwords). A broken file is skipped, and the connection window says which line is wrong.
 
 ## Monitoring account
 
