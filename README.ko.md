@@ -3,11 +3,11 @@
 ![.NET 11](https://img.shields.io/badge/.NET-11.0-512BD4)
 ![C# 15](https://img.shields.io/badge/C%23-15-239120)
 ![Blazor Hybrid](https://img.shields.io/badge/Blazor-Hybrid-5C2D91)
-![PostgreSQL 14+](https://img.shields.io/badge/PostgreSQL-14%2B-336791)
+![PostgreSQL 14–19](https://img.shields.io/badge/PostgreSQL-14%E2%80%9319-336791)
 ![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6)
 
 **[최신 배포본 내려받기](https://github.com/Doni-Kim/pgtune-release/releases/latest)** ·
-[English](README.md) · [매뉴얼 (HTML)](pgtune.html)
+[English](README.md) · [매뉴얼 (한국어)](pgtune.ko.html) · [Manual (English)](pgtune.en.html)
 
 PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개편했습니다. 부담 없이 쓰시라고 공유드립니다.
 
@@ -33,6 +33,20 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 |---|---|
 | ![실행 계획](screenshots/plan.jpg) | ![Plan history](screenshots/plan-history.jpg) |
 
+### PostgreSQL 19 (4.5)
+
+| 락 대기 누적 | Autovacuum queue · REPACK 진행 |
+|---|---|
+| ![Lock waits by type](screenshots/pg19-locks.png) | ![Vacuum](screenshots/pg19-vacuum.png) |
+
+| Top SQL의 Generic% | Fix this plan — plan advice |
+|---|---|
+| ![Top SQL](screenshots/pg19-topsql.png) | ![Plan advice](screenshots/pg19-advice.png) |
+
+| 안 쓰는 인덱스의 Stats since | 복제 슬롯 |
+|---|---|
+| ![인덱스](screenshots/pg19-index.png) | ![WAL](screenshots/pg19-wal.png) |
+
 ## 설치·설정
 
 - 압축을 풀고 폴더째 둔 뒤 `pgtune.exe` 를 실행하면 됩니다 (Single File Publishing).
@@ -46,6 +60,11 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - 실시간 대시보드: 게이지 둘 · 추이 그래프 여섯(왼쪽은 들어온 일, 오른쪽은 그 대가) · 세션 수 · 성능 카운터 열여덟 · 대기 이벤트 · 세션 목록을 한 화면에. Connections · Waiting 은 클라이언트 세션만 셉니다.
 - Top SQL(머리글을 눌러 화면에서 다시 정렬), Lock Chain, 인덱스 진단, VACUUM/XID, 복제 상태
 - 임계값 알림(접속 포화·데드락·복제 지연 등). 임계값 0 은 그 단계를 끕니다.
+- **PostgreSQL 19**(4.5): 19에서 새로 생긴 것을 화면에 올렸습니다 — 락 대기 누적(`pg_stat_lock`), autovacuum이 처리할 순서(`pg_stat_autovacuum_scores`),
+  VACUUM을 누가 어떤 모드로 시작했는지, `REPACK` 진행, Top SQL의 generic plan 비율, 인덱스 통계의 초기화 시각, 복제 슬롯,
+  Fix this plan의 plan advice 스크립트(`pg_plan_advice`). 18 이하에서는 보이지 않고, 없는 뷰를 불러 보지 않습니다.
+- **확장은 없어도 됩니다**(4.5): 접속할 때 한 번, 어떤 확장과 모듈을 쓸 수 있는지 판별합니다
+  (`pg_stat_statements` · `pg_stat_plans` · `pg_wait_sampling` · `pg_stat_kcache` · `pg_hint_plan` · `pg_plan_advice`). 없는 것에는 조회를 보내지 않습니다.
 - **History**: `L` 로 로컬 SQLite 에 모니터링 데이터를 쌓고, `H` 로 지난 흐름을 되짚습니다.
   - 구간은 1시간 / 6시간 / 24시간 / 1주 / 1개월 / 전체 중에서 고릅니다.
   - 지표는 메인 화면의 값 전부입니다 — 칩 30개가 메인 화면의 패널대로 네 줄(Gauges · Trend · Sessions · Performance)이고 라벨도 같습니다.
@@ -82,10 +101,11 @@ PostgreSQL 상태를 실시간으로 보는 모니터 툴 pgtune 을 전면 개�
 - **시작할 때 서버가 응답하지 않으면**: 20초 남짓 빈 화면 대신, 누구에게 몇 초째 붙는 중인지 보이는 작은 창이 뜨고 Cancel 로 접속 정보를 고칠 수 있습니다.
 - `F1` 을 누르면 단축키 도움말이, 한 번 더 누르면 Admin Functions & Commands 탭이 나옵니다.
 
-자세한 사용법은 첨부한 `pgtune.html` 문서를 참고해 주세요. 사용상 제한 없습니다.
+자세한 사용법은 첨부한 `pgtune.ko.html` 문서를 참고해 주세요. 사용상 제한 없습니다.
 
 ## 제약사항
 
+- PostgreSQL 14~19를 지원합니다.
 - UI 가 Web 기반(Blazor Hybrid)이라 Windows 전용입니다. Linux·macOS 에서는 단독 실행되지 않습니다.
 - 코드는 ConfuserEx 로 난독화(무료 툴이라 강력한 수준은 아닙니다).
 

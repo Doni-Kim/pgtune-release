@@ -3,11 +3,11 @@
 ![.NET 11](https://img.shields.io/badge/.NET-11.0-512BD4)
 ![C# 15](https://img.shields.io/badge/C%23-15-239120)
 ![Blazor Hybrid](https://img.shields.io/badge/Blazor-Hybrid-5C2D91)
-![PostgreSQL 14+](https://img.shields.io/badge/PostgreSQL-14%2B-336791)
+![PostgreSQL 14–19](https://img.shields.io/badge/PostgreSQL-14%E2%80%9319-336791)
 ![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6)
 
 **[Download the latest release](https://github.com/Doni-Kim/pgtune-release/releases/latest)** ·
-[한국어 설명](README.ko.md) · [Manual (Korean, HTML)](pgtune.html)
+[한국어 설명](README.ko.md) · [Manual (English)](pgtune.en.html) · [매뉴얼 (한국어)](pgtune.ko.html)
 
 pgtune is a desktop monitor for PostgreSQL. This release is a full rewrite of the UI and the
 diagnostics behind it. Free to use, no strings attached.
@@ -34,6 +34,20 @@ diagnostics behind it. Free to use, no strings attached.
 |---|---|
 | ![Plan](screenshots/plan.jpg) | ![Plan history](screenshots/plan-history.jpg) |
 
+### PostgreSQL 19 (4.5)
+
+| Cumulative lock waits | Autovacuum queue · REPACK progress |
+|---|---|
+| ![Lock waits by type](screenshots/pg19-locks.png) | ![Vacuum](screenshots/pg19-vacuum.png) |
+
+| Generic% in Top SQL | Fix this plan — plan advice |
+|---|---|
+| ![Top SQL](screenshots/pg19-topsql.png) | ![Plan advice](screenshots/pg19-advice.png) |
+
+| Stats since for unused indexes | Replication slots |
+|---|---|
+| ![Indexes](screenshots/pg19-index.png) | ![WAL](screenshots/pg19-wal.png) |
+
 ## Install
 
 - Unzip, keep the folder together, and run `pgtune.exe` (single-file publish).
@@ -48,6 +62,12 @@ diagnostics behind it. Free to use, no strings attached.
   eighteen performance counters, wait events and the session list on one screen. Connections and Waiting count client sessions only.
 - **Panels** — Top SQL (click a column header to re-sort what is on screen), lock chains, index diagnostics, VACUUM/XID, replication status.
 - **Alerts** — connection saturation, deadlocks, replication lag and more, with your own thresholds. A threshold of 0 turns that level off.
+- **PostgreSQL 19** (4.5) — what is new in 19 is on the screen: cumulative lock waits (`pg_stat_lock`), the autovacuum queue
+  (`pg_stat_autovacuum_scores`), who started a VACUUM and in which mode, `REPACK` progress, the share of generic plans in Top SQL,
+  when an index's statistics were last reset, replication slots, and plan advice scripts (`pg_plan_advice`) under Fix this plan.
+  These do not appear on 18 and older, and pgtune never queries a view that does not exist.
+- **Extensions are optional** (4.5) — pgtune checks once upon connecting which extensions and modules are available
+  (`pg_stat_statements`, `pg_stat_plans`, `pg_wait_sampling`, `pg_stat_kcache`, `pg_hint_plan`, `pg_plan_advice`) and sends no queries for missing ones.
 - **History** — press `L` to log every snapshot into a local SQLite file, then `H` to look back.
   - Ranges: 1 hour / 6 hours / 24 hours / 1 week / 1 month / all.
   - Every value on the main screen — 30 chips in the rows of the main screen (Gauges, Trend, Sessions, Performance), with the same labels.
@@ -96,12 +116,12 @@ diagnostics behind it. Free to use, no strings attached.
   Cancel to fix the connection, instead of an empty screen for 20-odd seconds.
 - Press `F1` for the keyboard shortcuts, and again for the Admin Functions & Commands tab.
 
-The bundled `pgtune.html` is the full manual (in Korean).
+The bundled `pgtune.en.html` is the full manual.
 
 ## Requirements and limits
 
 - **Windows only.** The UI is web-based (Blazor Hybrid), so it does not run standalone on Linux or macOS.
-- PostgreSQL 14 and newer.
+- PostgreSQL 14 to 19.
 - The code is obfuscated with ConfuserEx — a free tool, so do not expect strong protection.
 
 ## WebView2 Runtime

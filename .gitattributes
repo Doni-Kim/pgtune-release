@@ -1,2 +1,2 @@
-pgtune.html linguist-documentation=true
+*.html linguist-documentation=true
 *.md linguist-documentation=true
