@@ -1,0 +1,208 @@
+# pgtune — a real-time PostgreSQL monitor (free)
+
+![.NET 11](https://img.shields.io/badge/.NET-11.0-512BD4)
+![C# 15](https://img.shields.io/badge/C%23-15-239120)
+![Blazor Hybrid](https://img.shields.io/badge/Blazor-Hybrid-5C2D91)
+![PostgreSQL 14–19](https://img.shields.io/badge/PostgreSQL-14%E2%80%9319-336791)
+![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6)
+
+**[Download the latest release](https://github.com/Doni-Kim/pgtune-release/releases/latest)** ·
+[한국어 설명](README.ko.md) · [Manual (English)](pgtune.en.html) · [매뉴얼 (한국어)](pgtune.ko.html)
+
+pgtune is a desktop monitor for PostgreSQL. This release is a full rewrite of the UI and the
+diagnostics behind it. Free to use, no strings attached.
+
+## Screenshots
+
+| Live dashboard | Top SQL |
+|---|---|
+| ![Dashboard](screenshots/dashboard.jpg) | ![Top SQL](screenshots/top-sql.jpg) |
+
+| Lock chains | Session detail |
+|---|---|
+| ![Locks](screenshots/locks.jpg) | ![Session detail](screenshots/session-detail.jpg) |
+
+| History | Vacuum |
+|---|---|
+| ![History](screenshots/history.jpg) | ![Vacuum](screenshots/vacuum.jpg) |
+
+| Alerts | Index diagnostics |
+|---|---|
+| ![Alerts](screenshots/alerts.jpg) | ![Indexes](screenshots/indexes.jpg) |
+
+| Execution plan · Fix this plan | Plan history |
+|---|---|
+| ![Plan](screenshots/plan.jpg) | ![Plan history](screenshots/plan-history.jpg) |
+
+### PostgreSQL 19 (4.5)
+
+| Cumulative lock waits | Autovacuum queue · REPACK progress |
+|---|---|
+| ![Lock waits by type](screenshots/pg19-locks.png) | ![Vacuum](screenshots/pg19-vacuum.png) |
+
+| Generic% in Top SQL | Fix this plan — plan advice |
+|---|---|
+| ![Top SQL](screenshots/pg19-topsql.png) | ![Plan advice](screenshots/pg19-advice.png) |
+
+| Stats since for unused indexes | Replication slots |
+|---|---|
+| ![Indexes](screenshots/pg19-index.png) | ![WAL](screenshots/pg19-wal.png) |
+
+## Install
+
+- Unzip, keep the folder together, and run `pgtune.exe` (single-file publish).
+- No .NET install needed — the runtime is inside the executable.
+- The connection window opens first: add a server with **+ New**, fill in host, port, user, password and database, and press
+  **Connect**. Connections and settings are kept in `pgtune.db` next to the executable (passwords encrypted).
+- Coming from 3.x? Overwrite `pgtune.exe` — the connection json files next to it are brought in on the first start (below).
+
+## What it does
+
+- **Live dashboard** — two gauges, six trend graphs (what comes in on the left, what it costs on the right), session counts,
+  eighteen performance counters, wait events and the session list on one screen. Connections and Waiting count client sessions only.
+- **Panels** — Top SQL (click a column header to re-sort what is on screen), lock chains, index diagnostics, VACUUM/XID, replication status.
+- **Alerts** — connection saturation, deadlocks, replication lag and more, with your own thresholds. A threshold of 0 turns that level off.
+- **PostgreSQL 19** (4.5) — what is new in 19 is on the screen: cumulative lock waits (`pg_stat_lock`), the autovacuum queue
+  (`pg_stat_autovacuum_scores`), who started a VACUUM and in which mode, `REPACK` progress, the share of generic plans in Top SQL,
+  when an index's statistics were last reset, replication slots, and plan advice scripts (`pg_plan_advice`) under Fix this plan.
+  These do not appear on 18 and older, and pgtune never queries a view that does not exist.
+- **Extensions are optional** (4.5) — pgtune checks once upon connecting which extensions and modules are available
+  (`pg_stat_statements`, `pg_stat_plans`, `pg_wait_sampling`, `pg_stat_kcache`, `pg_hint_plan`, `pg_plan_advice`) and sends no queries for missing ones.
+- **History** — press `L` to log every snapshot into a local SQLite file, then `H` to look back.
+  - Ranges: 1 hour / 6 hours / 24 hours / 1 week / 1 month / all.
+  - Every value on the main screen — 30 chips in the rows of the main screen (Gauges, Trend, Sessions, Performance), with the same labels.
+  - Byte values pick their unit (B/s to GB/s) per range. A value that was not recorded is left empty, not drawn as 0.
+  - Hover the chart to read the value at that moment; the shaded band shows the min–max of each column.
+  - Old rows are trimmed automatically (30 days of metrics, 7 days of sessions by default; configurable).
+- **Object Info** — in the session detail and in Top SQL (click a row), `[Object Info]` shows every table the execution plan reads: size, columns with their
+  statistics, indexes (the ones this plan uses are highlighted) and partitions. Columns in the plan's conditions are marked, and a cast
+  on a column — which keeps an index from being used — is flagged. Nothing is run again; tables are taken from the plan, never guessed.
+- **Excel export** (`Ctrl+X`) — four sheets: session, SQL, plan and the same Object Info. Built on ClosedXML, so the `.xlsx` is written even without Excel installed,
+  and opens automatically when Excel is there.
+- **Blocking tree** — `A` shows who blocks whom as a tree (decided by `pg_blocking_pids()`); the session list has a
+  Blocked by column, and `F5` shows blockers together with the sessions they block.
+- **Session list** — `F2` All shows every session, idle ones included (working sessions first, idle at the bottom with the last statement they ran); `F3`–`F5` narrow it to running / waiting / blocking.
+- **Find and stop** — `/` filters the session list by text; `Ctrl+K` cancels the query or terminates the connection.
+- **Find SQL** (`Ctrl+F`) — type a `queryid` to open that statement's statistics, plan and Object Info without going through Top SQL.
+- **SQL tab** — the statement is the first tab of the detail (`[SQL] [Plan] [Object Info]`), and a one-line statement is laid out by clause. Only spaces and line breaks outside quotes change, never a character; `[Beautify]` switches to the original and back.
+- **One SQL window** (3.9) — the session detail, Top SQL and Find SQL open the same window: a summary with the sessions running the statement now, `[Statistics]` with everything `pg_stat_statements` keeps, and `[Excel]` in each.
+  When `pg_stat_plans`, `pg_wait_sampling` or `pg_stat_kcache` is installed, plan history, the wait profile and OS figures appear too. Plan nodes are coloured (red only for a Seq Scan on a large table).
+  With `pg_hint_plan`, the plan tab also offers hints that fix the current plan (join order, join methods, scans) as a comment or a hint-table row (3.15, shown, never run) — and, with `pg_stat_plans`, for every plan in Plan history, to go back to a plan the statement really used (3.16).
+- **When an alert fires** — the blocking tree and the statements involved are saved to a file under `captures\`,
+  and a Critical alert flashes the taskbar and shows a Windows notification when the window is not in front.
+- In History, click a point in time to see the sessions that were logged at that moment.
+- Logs, Excel files and captures are kept per server, in `{host_port}\{database}\` next to the executable.
+- **Most read tables** (Index, `X`) — which tables are read from outside `shared_buffers`, partitions added up, with
+  how much of all reads the rows account for; `Δ delta` shows only what was read since a baseline you set.
+- `sslMode` `verify-ca` / `verify-full` are checked against a real SSL server; when a certificate is rejected the
+  connection dialog says what to change (trust the CA in the Windows store or set `PGSSLROOTCERT`).
+- **Admin functions** — the second `F1` tab finds PostgreSQL admin functions as you type (`pg_terminate_backend`,
+  `pg_reload_conf`, `pg_wal_lsn_diff` …). The list, arguments and descriptions are read from the connected server,
+  functions added by extensions included, so they always match its version. 70 of the most used come with a sample
+  to copy — pgtune never runs them. No internet needed.
+- **Admin commands** — the same tab lists 23 admin SQL commands, PostgreSQL's counterpart of SQL Server's DBCC:
+  `VACUUM`, `ANALYZE`, `REINDEX`, `CLUSTER`, `CHECKPOINT`, `ALTER SYSTEM`, `CREATE INDEX CONCURRENTLY` … with the lock each
+  takes, whether it can run in a transaction and the permission it needs; plus amcheck's integrity checks.
+- **Connection window** (4.0) — saved connections on the left (most recently used first), the selected one on the right.
+  **Test** connects, shows the server version and disconnects without saving; **Connect** saves only after it connects.
+- **Top bar** (4.0) — the dot before the address is blue while collecting (click it to disconnect) and red while reconnecting
+  or disconnected (click it to connect now). **Connection** switches to another server without closing the window, and the
+  GitHub icon opens this page.
+- **Settings screen** — `O` changes the collection interval (3–60 s, 5 by default), log retention, Top SQL, Excel, alert
+  thresholds and which sessions `L` logs. Values are checked, saved for the current connection (Excel is shared by all
+  connections) and applied at once.
+- **12 themes** — six light, six dark, GitHub Light by default; pick one from the top bar.
+- **Server not answering at startup** — a small window shows whom pgtune is connecting to and for how long, with
+  Cancel to fix the connection, instead of an empty screen for 20-odd seconds.
+- Press `F1` for the keyboard shortcuts, and again for the Admin Functions & Commands tab.
+
+The bundled `pgtune.en.html` is the full manual.
+
+## Requirements and limits
+
+- **Windows only.** The UI is web-based (Blazor Hybrid), so it does not run standalone on Linux or macOS.
+- PostgreSQL 14 to 19.
+- The code is obfuscated with ConfuserEx — a free tool, so do not expect strong protection.
+
+## WebView2 Runtime
+
+pgtune draws its window with the Microsoft Edge WebView2 Runtime. When it is missing, pgtune says so at startup and
+tells you where to get it (3.10 and earlier opened a blank window instead).
+
+- **Windows 11** — built into the OS, always present.
+- **Windows 10** — shipped through Windows Update since 2021, so it is there on most machines.
+  A PC that has not been updated in a long time, or a special edition such as LTSC, may not have it.
+- **Windows Server (2016/2019/2022)** — often not included; install it separately.
+
+Install Microsoft's "Evergreen Standalone Installer"
+(`MicrosoftEdgeWebView2RuntimeInstallerX64.exe`) from
+https://developer.microsoft.com/microsoft-edge/webview2/
+
+The WebView2 cache is kept in a `WebView2` folder next to `pgtune.exe` (4.5.1 — before, `%LOCALAPPDATA%\pgtune.WebView2`,
+which you can delete). When the exe folder is not writable, the default location is used.
+
+## If something breaks
+
+Errors are written to `pgtune.log` next to the executable.
+
+- **Bugs and questions** — open an [issue](https://github.com/Doni-Kim/pgtune-release/issues).
+  Please do not attach the log there: it holds no passwords, but it can contain server addresses and SQL text.
+- **The log file**, or anything you would rather not post in public — mail it to **doniikim@gmail.com**.
+
+## Built with
+
+- .NET 11.0 (x64), C# 15, Blazor Hybrid
+- Npgsql · Microsoft.Data.Sqlite · ClosedXML · Microsoft.Web.WebView2 · Microsoft.AspNetCore.Components.WebView.WindowsForms
+- Copyright notices and license texts of these bundled components: [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt) (also inside the zip)
+
+## Connections and settings (`pgtune.db`)
+
+Everything pgtune keeps lives in `pgtune.db` next to `pgtune.exe`: the connections, each connection's settings (interval,
+alerts, Top SQL, log retention, log filter) and the window position and theme. Settings are changed only in `O`, so there is
+no file to break by hand. To update pgtune, overwrite `pgtune.exe`; deleting `pgtune.db` starts from scratch.
+It holds the encrypted passwords — do not hand it to others.
+
+- Leave **Database** empty to pick a database from a list after connecting (pgtune reads the list from the database named
+  after the account, then `postgres`, then `template1`).
+- **SSL mode** is `prefer` by default; `verify-ca` / `verify-full` check the server certificate.
+- Only one pgtune runs per folder. Switch servers with **Connection** on the top bar, or use one folder per server to watch
+  several at the same time.
+- **Coming from 3.x** — overwrite `pgtune.exe` in the old folder. On the first start the connection json files next to it
+  (`pgtune.json`, `pgtuneNode1.json` …) are read once, one connection per file, together with their settings; plain and
+  old-format passwords are encrypted. The json files are neither changed nor deleted — delete them yourself once you have
+  checked (safer if they held plain passwords). A broken file is skipped, and the connection window says which line is wrong.
+
+## Monitoring account
+
+A superuser is not required. Run only the lines you need:
+
+```sql
+CREATE ROLE pgtune_monitor LOGIN PASSWORD '...';
+GRANT pg_monitor TO pgtune_monitor;          -- other users' sessions and queries, sizes, settings, the extensions' statistics
+GRANT pg_read_all_data TO pgtune_monitor;    -- only for execution plans (EXPLAIN) and column statistics; lets the role read every table
+GRANT pg_signal_backend TO pgtune_monitor;   -- only if you want Ctrl+K (cancel a query / terminate a connection)
+-- PostgreSQL 19 only (plan advice) — do NOT run on 18 or older: the role could no longer connect
+ALTER ROLE pgtune_monitor SET session_preload_libraries = 'pg_plan_advice';
+GRANT EXECUTE ON FUNCTION pg_get_advice_stash_contents(text) TO pgtune_monitor;   -- PostgreSQL 19 with the pg_stash_advice extension only: to list stashed advice
+```
+
+- `pg_monitor` alone covers the main screen and every panel, Top SQL and Statistics, and the extensions' values
+  (`pg_stat_plans`, `pg_wait_sampling`, `pg_stat_kcache`, the hint table of `pg_hint_plan`).
+- **Execution plans need table privileges.** PostgreSQL requires the same privileges for `EXPLAIN` as for running the statement.
+  For a statement on a table the role cannot read, the Plan tab shows "permission denied for table …" and the column statistics
+  in Object Info are empty. `pg_read_all_data` (or `SELECT` on each table) makes the plans of SELECT statements and the column statistics visible.
+- Plans of UPDATE, DELETE and INSERT statements need write privileges on the table — a read-only monitoring account cannot see them.
+
+Without `pg_monitor`, PostgreSQL hides other users' sessions. pgtune says so instead of looking empty —
+"N sessions of other users are hidden — grant pg_monitor …" above the session list, Connections and Locks.
+
+## Terms
+
+Free to use, at work or at home. Please do not redistribute the binary or reverse-engineer it.
+The source is not published.
+
+## Contact
+
+DBMS Works — **doniikim@gmail.com**
+
+Also available for Oracle → PostgreSQL / MySQL migration and database performance tuning work.
